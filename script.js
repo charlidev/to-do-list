@@ -15,33 +15,58 @@ const setDate = () => {
     dateYear.textContent = date.toLocaleString('es', { year: 'numeric' });
 };
 
+const loadTasks = () => {
+    const savedTasks = localStorage.getItem('tasks');
+    if (savedTasks) {
+        tasksContainer.innerHTML = savedTasks;
+        addClickEventToTasks();
+    }
+};
+
+const saveTasks = () => {
+    localStorage.setItem('tasks', tasksContainer.innerHTML);
+};
+
+const addClickEventToTasks = () => {
+    const tasks = document.querySelectorAll('.task');
+    tasks.forEach(task => {
+        task.addEventListener('click', changeTaskState);
+    });
+};
+
 const addNewTask = event => {
     event.preventDefault();
     const { value } = event.target.taskText;
-    if(!value) return;
+    if (!value) return;
     const task = document.createElement('div');
     task.classList.add('task', 'roundBorder');
-    task.addEventListener('click', changeTaskState)
     task.textContent = value;
     tasksContainer.prepend(task);
     event.target.reset();
+    addClickEventToTasks();
+    saveTasks();
 };
 
 const changeTaskState = event => {
     event.target.classList.toggle('done');
+    saveTasks();
 };
 
 const order = () => {
     const done = [];
     const toDo = [];
-    tasksContainer.childNodes.forEach( el => {
-        el.classList.contains('done') ? done.push(el) : toDo.push(el)
-    })
+    tasksContainer.childNodes.forEach(el => {
+        el.classList.contains('done') ? done.push(el) : toDo.push(el);
+    });
     return [...toDo, ...done];
-}
+};
 
 const renderOrderedTasks = () => {
-    order().forEach(el => tasksContainer.appendChild(el))
-}
+    order().forEach(el => tasksContainer.appendChild(el));
+};
 
-setDate();
+window.addEventListener('DOMContentLoaded', () => {
+    setDate();
+    loadTasks();
+});
+
